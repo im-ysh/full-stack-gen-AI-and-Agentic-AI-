@@ -13,7 +13,7 @@ SYSTEM_PROMPT = "You need to anser only coding related question or else strictly
 response = client.chat.completions.create(
     model = "gemini-2.5-flash",
     messages = [
-        {"role" : "system" , "content": "SYSTEM_PROMPT"},
+        {"role" : "system" , "content": SYSTEM_PROMPT},
         {"role": "user", "content": "hey there. can you code a python program that can print hello"}
     ]
 )
