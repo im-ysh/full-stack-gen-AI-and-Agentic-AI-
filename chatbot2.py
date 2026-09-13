@@ -2,7 +2,7 @@ from google import genai
 from dotenv import load_dotenv
 from google.genai import types
 import os 
-
+import json
 
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
@@ -31,8 +31,18 @@ def create_task(
         "status" : status    
     }
 
-    print("TOOL ACTUALLY RAN:", task)
+    try:
+        with open("tasks.json" , "r") as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        tasks = []
 
+    tasks.append(task)
+
+    with open("tasks.json" , "w") as file:
+        json.dump(tasks ,file, indent = 2)
+
+    print("TOOL ACTUALLY RAN:", task)
 
     return task
 
@@ -86,23 +96,23 @@ while True:
        print("ARGUMENTS:", function_call.args)
 
        if function_call.name == "create_task":
-           result = create_task(**function_call.args)
+          result = create_task(**function_call.args)
 
-           print("TOOL RESULT:", result)
+          print("TOOL RESULT:", result)
 
-           tool_response = types.Part.from_function_response(
-               name=function_call.name,
-               response=result
-            )
+          tool_response = types.Part.from_function_response(
+              name=function_call.name,
+              response=result
+          )
 
-    print("TOOL RESPONSE PART:", tool_response)
+          print("TOOL RESPONSE PART:", tool_response)
 
-    final_response = chat.send_message(tool_response)
+          final_response = chat.send_message(tool_response)
 
-    print("\nAI:", final_response.text)
+          print("\nAI:", final_response.text)
 
-else:
-    print("\nAI:", response.text)
+    else:
+        print("\nAI:", response.text)
 
-
+ 
     
